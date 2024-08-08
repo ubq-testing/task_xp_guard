@@ -69,6 +69,26 @@ export function calculateRank({
   const TOTAL_WEIGHT = COMMITS_WEIGHT + PRS_WEIGHT + ISSUES_WEIGHT + REVIEWS_WEIGHT + STARS_WEIGHT + FOLLOWERS_WEIGHT;
 
   const THRESHOLDS = [1, 12.5, 25, 37.5, 50, 62.5, 75, 87.5, 100];
+  /**
+   * A good XP system as-is and we include dollars-earned and weight it considerably more than the other stats
+   * We could consider:
+   *
+   * - Refactor to be dollar/number based i.e Level 1 = $0 - $100, L2 = $101 - $500, L3 = $501 - $2,000, etc
+   * - If user level === Level 1, we rely on the metadata markers for guarding
+   * - L3 and above, we can use the XP system and disregard the metadata markers
+   *   as by that point they'd likely have a good enough track record to be trusted in harder tasks
+   *
+   * So V1 would be:
+   *
+   * - task labels: ["Solidity: (Mid)"]
+   * - Anyone with the required language percentage can take the task
+   *
+   * V2 would be:
+   *
+   * - task labels: ["Solidity: (Mid)", , "Level 3"]
+   * - Anyone with the required language can take the task
+   *   or anyone with a user dollar-earned XP level of 3 or higher regardless of language
+   */
   const LEVELS = ["S", "A+", "A", "A-", "B+", "B", "B-", "C+", "C"];
 
   const rank =

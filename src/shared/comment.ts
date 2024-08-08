@@ -3,7 +3,7 @@ import { Context } from "../types";
 export async function addCommentToIssue(context: Context, comment: string) {
   const { octokit, payload } = context;
   try {
-    await octokit.issues.createComment({
+    await octokit.rest.issues.createComment({
       owner: payload.repository.owner.login,
       repo: payload.repository.name,
       issue_number: payload.issue.number,

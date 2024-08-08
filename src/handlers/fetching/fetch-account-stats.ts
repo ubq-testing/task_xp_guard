@@ -36,6 +36,7 @@ export async function fetchAccountStats(token: string, username: string) {
   stats.contributedTo = user.repositoriesContributedTo.totalCount;
   stats.totalStars = user.repositories.nodes?.reduce((prev: number, curr: { stargazers: { totalCount: number } }) => prev + curr.stargazers.totalCount, 0) || 0;
 
+  // could be refactored to be aligned with our actual XP system
   stats.rank = calculateRank({
     all_commits: true,
     commits: stats.totalCommits,
@@ -55,8 +56,6 @@ async function statsQuery(
     first?: number;
     after?: string;
     includeMergedPullRequests?: boolean;
-    includeDiscussions?: boolean;
-    includeDiscussionsAnswers?: boolean;
   },
   token: string
 ) {

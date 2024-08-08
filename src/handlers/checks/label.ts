@@ -49,18 +49,16 @@ async function checkLabelGuards(
 
   for (const labelFilter of normalizedLabelFilters) {
     if (!normalizedUserLanguages.has(labelFilter)) {
-      const logMessage = `${user} does not have the required language ${labelFilter}`;
-      logger.error(logMessage);
-      await addCommentToIssue(context, logMessage);
-      throw new Error(logMessage);
+      const logMessage = logger.error(`@${user} does not have the required language for: ${labelFilter}`);
+      await addCommentToIssue(context, logMessage?.logMessage.diff as string);
+      throw new Error(logMessage?.logMessage.raw);
     }
 
     const userLang = Array.from(userLanguages).find(({ name }) => name === labelFilter);
     if (!userLang) {
-      const logMessage = `${user} does not have the required language ${labelFilter}`;
-      logger.error(logMessage);
-      await addCommentToIssue(context, logMessage);
-      throw new Error(logMessage);
+      const logMessage = logger.error(`@${user} failed to pass the required language guard for ${labelFilter}`);
+      await addCommentToIssue(context, logMessage?.logMessage.diff as string);
+      throw new Error(logMessage?.logMessage.raw);
     }
 
     const tier = labelFilters.find(({ name }) => name === labelFilter)?.tier || "n/a";
@@ -72,17 +70,15 @@ async function checkLabelGuards(
 
     const tierValue = xpTiers[tier];
     if (!tierValue) {
-      const logMessage = `No XP tier found for ${tier}`;
-      logger.error(logMessage);
-      await addCommentToIssue(context, logMessage);
-      throw new Error(logMessage);
+      const logMessage = logger.error(`No tier value found for ${tier}`);
+      await addCommentToIssue(context, logMessage?.logMessage.diff as string);
+      throw new Error(logMessage?.logMessage.raw);
     }
 
     if (userLang.percentage < tierValue) {
-      const logMessage = `${user} does not have the required percentage for ${labelFilter}`;
-      logger.error(logMessage);
-      await addCommentToIssue(context, logMessage);
-      throw new Error(logMessage);
+      const logMessage = logger.error(`@${user} does not meet the required tier for ${labelFilter}`);
+      await addCommentToIssue(context, logMessage?.logMessage.diff as string);
+      throw new Error(logMessage?.logMessage.raw);
     }
   }
 }

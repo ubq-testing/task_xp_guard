@@ -18,22 +18,22 @@ export async function handleStatChecks(context: Context, token: string, user: st
   }
 
   if (hasFailedCommitCheck) {
-    const log = logger.error(commentMessage(totalCommits, minCommitsThisYear, "commits"));
+    const log = logger.error(commentMessage(totalCommits, minCommitsThisYear, "commit"));
     await addCommentToIssue(context, log?.logMessage.diff as string);
   }
 
   if (hasFailedPrCheck) {
-    const log = logger.error(commentMessage(stats.totalPRs, prs, "PRs"));
+    const log = logger.error(commentMessage(stats.totalPRs, prs, "PR"));
     await addCommentToIssue(context, log?.logMessage.diff as string);
   }
 
   if (hasFailedIssueCheck) {
-    const log = logger.error(commentMessage(stats.totalIssues, issues, "issues"));
+    const log = logger.error(commentMessage(stats.totalIssues, issues, "issue"));
     await addCommentToIssue(context, log?.logMessage.diff as string);
   }
 
   if (hasFailedStarCheck) {
-    const log = logger.error(commentMessage(stats.totalStars, stars, "stars"));
+    const log = logger.error(commentMessage(stats.totalStars, stars, "star"));
     await addCommentToIssue(context, log?.logMessage.diff as string);
   }
 

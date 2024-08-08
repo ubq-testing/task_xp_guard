@@ -4,6 +4,7 @@ import { Langs } from "../../types/shared";
 export async function fetchTopLanguages(username: string, token: string, sizeWeight = 1, countWeight = 0) {
   const { user } = await graphqlFetchRetrier({ login: username }, token);
 
+  // data taken from graphql query
   const langData = user.repositories.nodes
     .filter((repo) => repo.languages.edges.length > 0)
     .flatMap((repo) => repo.languages.edges)
@@ -22,10 +23,12 @@ export async function fetchTopLanguages(username: string, token: string, sizeWei
       {} as Record<string, Langs>
     );
 
+  // weight the languages by size and count
   Object.values(langData).forEach((lang) => {
     lang.size = Math.pow(lang.size, sizeWeight) * Math.pow(lang.count, countWeight);
   });
 
+  // sort the languages by most used
   const assorted = Object.keys(langData)
     .sort((a, b) => langData[b].size - langData[a].size)
     .reduce(
@@ -36,7 +39,10 @@ export async function fetchTopLanguages(username: string, token: string, sizeWei
       {} as Record<string, Langs>
     );
 
+  // determine the total size of the languages (between 1 and 10)
   const totalSize = Object.values(assorted).reduce((acc, lang) => acc + lang.size, 0);
+
+  // calculate the percentage of each language
   return Object.values(assorted).map((lang) => {
     const percentage = parseFloat(((lang.size / totalSize) * 100).toFixed(2));
     return { ...lang, percentage };

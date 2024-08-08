@@ -22,7 +22,8 @@ export async function handleExperienceChecks(context: Context, token: string) {
     users = [...users, ...usernames.map((username) => username.slice(1))];
   }
 
-  let isOk;
+  // we'll eject the user if this is false
+  let isOk = true;
 
   for (const user of users) {
     logger.info(`Checking ${user}'s experience`);
@@ -51,12 +52,13 @@ async function checkUserExperience(context: Context, token: string, user: string
     },
   } = context;
 
-  if (!(await accountAgeHandler(context))) {
-    const log = `${user} does not meet the minimum account age requirement`;
-    await addCommentToIssue(context, log);
-    throw new Error(log);
+  if (!(await accountAgeHandler(context, user))) {
+    const log = context.logger.error(`@${user} has not met the minimum account age requirement`);
+    await addCommentToIssue(context, log?.logMessage.diff as string);
+    throw new Error(log?.logMessage.raw as string);
   }
 
+  // normalize the tiers
   const tiers = Object.entries(xpTiers).reduce(
     (acc, [key, value]) => {
       acc[key.toLowerCase()] = value;
@@ -64,9 +66,11 @@ async function checkUserExperience(context: Context, token: string, user: string
     },
     {} as Record<string, number>
   );
+
   const hasPassedLabelChecks = await handleLabelChecks(context, token, labelFilters, tiers, user);
   const hasPassedStatChecks = await handleStatChecks(context, token, user, minCommitsThisYear, prs, issues, stars);
 
+  // if either of the checks fail, we'll remove the user
   return !!(hasPassedStatChecks && hasPassedLabelChecks);
 }
 
@@ -84,7 +88,7 @@ async function findAndRemoveAssignee(context: Context, user: string) {
 
     if (assignees.includes(user)) {
       logger.info(`Removing ${user} from the task`);
-      await octokit.issues.removeAssignees({
+      await octokit.rest.issues.removeAssignees({
         owner: payload.repository.owner.login,
         repo: payload.repository.name,
         issue_number: payload.issue.number,

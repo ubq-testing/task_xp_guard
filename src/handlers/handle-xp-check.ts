@@ -68,5 +68,5 @@ async function checkUserExperience(context: Context, token: string, user: string
   const hasPassedStatChecks = await handleStatChecks(context, token, user, minCommitsThisYear, prs, issues, stars);
 
   // if either of the checks fail, we'll remove the user
-  return hasPassedStatChecks && hasPassedLabelChecks
+  return hasPassedStatChecks && hasPassedLabelChecks;
 }

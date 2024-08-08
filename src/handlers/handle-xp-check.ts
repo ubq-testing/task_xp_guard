@@ -30,11 +30,13 @@ export async function handleExperienceChecks(context: Context, token: string) {
     try {
       const isOk = await checkUserExperience(context, token, user);
       output[user] = isOk;
+      if (isOk) {
+        logger.info(`${user} has passed the experience check`);
+      }
     } catch (error) {
-      logger.error(`Failed to check ${user}'s experience, removing...`, { e: error });
+      logger.error(`Failed to check ${user}'s experience`, { e: error });
+      output[user] = false;
     }
-
-    logger.info(`${user} meets all requirements`);
   }
 
   return output;

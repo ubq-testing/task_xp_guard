@@ -31,18 +31,18 @@ export async function handleLabelChecks(context: Context, token: string, labelFi
 
   const msg: string[] = [];
 
-  const highestTieredDuplicates = await findAndRemoveDuplicateFilters(labelFilters_, xpTiers);
-  let checked = { hasPassed: true, msg: [""] };
-  if (highestTieredDuplicates.length > 0) {
-    msg.push(`Duplicate filters found, defaulting to highest tiered filters: ${highestTieredDuplicates.map(({ name }) => name).join(", ")}`)
-    checked = await checkLabelGuards(context, userLanguages, highestTieredDuplicates, xpTiers, user);
-    msg.push(checked.msg.join(", "));
-  } else {
-    checked = await checkLabelGuards(context, userLanguages, labelFilters_, xpTiers, user);
-    msg.push(checked.msg.join(", "));
-  }
+  const { highestTieredDuplicates, msg: duplicateMsgs } = await findAndRemoveDuplicateFilters(labelFilters_, xpTiers);
+  const checked = await checkLabelGuards(context, userLanguages, highestTieredDuplicates, xpTiers, user);
 
-  await addCommentToIssue(context, msg.join("\n"));
+  if (duplicateMsgs.length > 0 || checked.msg.length > 0) {
+    msg.push(duplicateMsgs.join(""));
+    if (msg.length > 0) {
+      msg.push(checked.msg.join(", "));
+    } else {
+      msg.push(`\`\`\`diff\n${checked.msg.join(", ")}`);
+    }
+    await addCommentToIssue(context, msg.join("\n"));
+  }
 
   return checked.hasPassed;
 }
@@ -50,16 +50,33 @@ export async function handleLabelChecks(context: Context, token: string, labelFi
 async function findAndRemoveDuplicateFilters(labelFilters: { name: string; tier: string }[], xpTiers: Record<string, number>) {
   const highestTierMap: Record<string, { name: string; tier: string }> = {};
 
+  const msg: string[] = ["```diff\n! Duplicate filters found, defaulting to the highest tiered: "];
+  let count = 0;
   labelFilters.forEach((label) => {
     const currentTierValue = xpTiers[label.tier];
     const existingEntry = highestTierMap[label.name];
 
-    if (!existingEntry || currentTierValue > xpTiers[existingEntry.tier]) {
+    if (!existingEntry) {
       highestTierMap[label.name] = label;
+      return;
+    }
+
+    const existingTierValue = xpTiers[existingEntry.tier];
+
+    if (currentTierValue > existingTierValue) {
+      highestTierMap[label.name] = label;
+      count++;
+      msg.push(`\n- ${label.name} (${label.tier})`);
+    } else if (currentTierValue <= existingTierValue) {
+      count++;
+      msg.push(`\n- ${label.name} (${existingEntry.tier})`);
     }
   });
 
-  return Object.values(highestTierMap);
+  return {
+    highestTieredDuplicates: Object.values(highestTierMap),
+    msg: count > 0 ? msg : [],
+  };
 }
 
 async function checkLabelGuards(
@@ -81,7 +98,7 @@ async function checkLabelGuards(
   for (const labelFilter of normalizedLabelFilters) {
     if (!normalizedUserLanguages.has(labelFilter)) {
       const logMessage = logger.error(`${user} does not have the required language for: ${labelFilter}`);
-      msg.push(logMessage?.logMessage.diff as string);
+      msg.push(`\n! ${logMessage?.logMessage.raw}`);
       hasPassed = false;
       continue;
     }
@@ -90,7 +107,7 @@ async function checkLabelGuards(
     if (!userLang) {
       const logMessage = logger.error(`${user} failed to pass the required language guard for ${labelFilter}`);
       hasPassed = false;
-      msg.push(logMessage?.logMessage.diff as string);
+      msg.push(`\n! ${logMessage?.logMessage.raw}`);
       continue;
     }
 
@@ -104,8 +121,8 @@ async function checkLabelGuards(
 
     const tierValue = xpTiers[tier];
     if (!tierValue) {
-      const logMessage = logger.error(`No tier value found for ${tier}`);
-      msg.push(logMessage?.logMessage.diff as string);
+      const logMessage = logger.error(`No tier value found for ${labelFilter}/${tier}`);
+      msg.push(`\n! ${logMessage?.logMessage.raw}`);
       hasPassed = false;
       continue;
     }
@@ -113,16 +130,19 @@ async function checkLabelGuards(
     if (userLang && userLang.percentage < tierValue) {
       const logMessage = logger.error(`${user} does not meet the required tier for ${labelFilter.charAt(0).toUpperCase() + labelFilter.slice(1)}`);
       hasPassed = false;
-      msg.push(logMessage?.logMessage.diff as string);
+      msg.push(`\n! ${logMessage?.logMessage.raw}`);
     } else if (!userLang) {
       const logMessage = logger.error(`${user} does not have the required language for: ${labelFilter.charAt(0).toUpperCase() + labelFilter.slice(1)}`);
       hasPassed = false;
-      msg.push(logMessage?.logMessage.diff as string);
+      msg.push(`\n! ${logMessage?.logMessage.raw}`);
     }
   }
 
   if (hasPassed) {
-    logger.info(`${user} has passed the required language guards for ${normalizedLabelFilters.join(", ")}`);
+    logger.info(`${user} has passed the required language guards for ${normalizedLabelFilters.join(", ")}`, {
+      userLanguages: Array.from(userLanguages),
+      labelFilters,
+    });
   } else {
     logger.error(`${user} has failed the required language guards: `, {
       userLanguages: Array.from(userLanguages),

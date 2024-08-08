@@ -25,7 +25,7 @@ export const pluginSettingsSchema = T.Object(
     labelFilters: T.Array(T.String()),
     /**
      * XP tiers for the user. These should map directly to your
-     * labelling schema (i.e. "Junior", "Mid", "Pro")
+     * labelling schema (i.e. "Junior", "Mid", "Pro", "Level 1", "Level 2", etc)
      */
     xpTiers: T.Record(T.String(), T.Number()),
     statThresholds: T.Object({
@@ -58,17 +58,3 @@ export const pluginSettingsSchema = T.Object(
 export const pluginSettingsValidator = new StandardValidator(pluginSettingsSchema);
 
 export type PluginSettings = StaticDecode<typeof pluginSettingsSchema>;
-
-export type Thresholds = {
-  prs: number;
-  stars: number;
-  issues: number;
-  minCommitsThisYear: number;
-};
-
-export type LangData = {
-  lang: string;
-  percentage: number;
-};
-
-export type Language = Record<string, number>;

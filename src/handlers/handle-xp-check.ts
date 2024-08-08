@@ -23,24 +23,21 @@ export async function handleExperienceChecks(context: Context, token: string) {
   }
 
   // we'll eject the user if this is false
-  let isOk = true;
+  const output: Record<string, boolean> = {};
 
   for (const user of users) {
     logger.info(`Checking ${user}'s experience`);
     try {
-      isOk = await checkUserExperience(context, token, user);
+      const isOk = await checkUserExperience(context, token, user);
+      output[user] = isOk;
     } catch (error) {
       logger.error(`Failed to check ${user}'s experience, removing...`, { e: error });
-      isOk = false;
-    }
-
-    if (!isOk) {
-      isOk = await findAndRemoveAssignee(context, user);
-      continue;
     }
 
     logger.info(`${user} meets all requirements`);
   }
+
+  return output;
 }
 
 async function checkUserExperience(context: Context, token: string, user: string) {
@@ -53,9 +50,9 @@ async function checkUserExperience(context: Context, token: string, user: string
   } = context;
 
   if (!(await accountAgeHandler(context, user))) {
-    const log = context.logger.error(`@${user} has not met the minimum account age requirement`);
+    const log = context.logger.error(`${user} has not met the minimum account age requirement`);
     await addCommentToIssue(context, log?.logMessage.diff as string);
-    throw new Error(log?.logMessage.raw as string);
+    return false;
   }
 
   // normalize the tiers
@@ -71,36 +68,5 @@ async function checkUserExperience(context: Context, token: string, user: string
   const hasPassedStatChecks = await handleStatChecks(context, token, user, minCommitsThisYear, prs, issues, stars);
 
   // if either of the checks fail, we'll remove the user
-  return !!(hasPassedStatChecks && hasPassedLabelChecks);
-}
-
-async function findAndRemoveAssignee(context: Context, user: string) {
-  const { logger, octokit, payload } = context;
-
-  try {
-    const issue = await octokit.issues.get({
-      owner: payload.repository.owner.login,
-      repo: payload.repository.name,
-      issue_number: payload.issue.number,
-    });
-
-    const assignees = issue.data.assignees?.map((assignee) => assignee.login) || [];
-
-    if (assignees.includes(user)) {
-      logger.info(`Removing ${user} from the task`);
-      await octokit.rest.issues.removeAssignees({
-        owner: payload.repository.owner.login,
-        repo: payload.repository.name,
-        issue_number: payload.issue.number,
-        assignees: [user],
-      });
-
-      const log = logger.info(`@${user} you have been removed from the task due to not meeting the requirements. Please find an alternative task to work on.`);
-      await addCommentToIssue(context, log?.logMessage.diff as string);
-    }
-  } catch (error) {
-    const log = logger.error(`Failed to remove ${user} from the task`, { e: error });
-    throw new Error(log?.logMessage.raw as string);
-  }
-  return true;
+  return hasPassedStatChecks && hasPassedLabelChecks
 }

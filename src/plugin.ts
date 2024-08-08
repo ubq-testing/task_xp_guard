@@ -4,6 +4,7 @@ import { Context } from "./types";
 import { isStartCommandEvent } from "./types/typeguards";
 import { LogLevel, Logs } from "@ubiquity-dao/ubiquibot-logger";
 import { handleExperienceChecks } from "./handlers/handle-xp-check";
+import manifest from "../manifest.json";
 
 /**
  * The main plugin function. Split for easier testing.
@@ -33,5 +34,21 @@ export async function plugin(inputs: PluginInputs, env: Env) {
     logger: new Logs("info" as LogLevel),
   };
 
-  return runPlugin(context, inputs.authToken);
+  const result = await runPlugin(context, inputs.authToken);
+
+  return returnDataToKernel(context, inputs.stateId, { result });
+}
+
+async function returnDataToKernel(context: Context, stateId: string, output: object) {
+  const { octokit, payload } = context;
+  await octokit.repos.createDispatchEvent({
+    owner: payload.repository.owner.login,
+    repo: payload.repository.name,
+    event_type: "return_data_to_ubiquibot_kernel",
+    client_payload: {
+      pluginName: manifest.name,
+      state_id: stateId,
+      output: JSON.stringify(output),
+    },
+  });
 }

@@ -8,31 +8,31 @@ export async function handleStatChecks(context: Context, token: string, user: st
   const stats = await fetchAccountStats(token, user);
   const totalCommits = await commitsFetcher(context, user);
 
-  const hasFailedCommitCheck = totalCommits < minCommitsThisYear;
-  const hasFailedPrCheck = stats.totalPRs < prs;
-  const hasFailedIssueCheck = stats.totalIssues < issues;
-  const hasFailedStarCheck = stats.totalStars < stars;
+  const hasPassedCommitCheck = totalCommits > minCommitsThisYear;
+  const hasPassedPrCheck = stats.totalPRs > prs;
+  const hasPassedIssueCheck = stats.totalIssues > issues;
+  const hasPassedStarCheck = stats.totalStars > stars;
 
   function commentMessage(a: number, b: number, type: string) {
     return `${user} does not meet the minimum ${type} requirement. Required: ${b}, Actual: ${a}`;
   }
 
-  if (hasFailedCommitCheck) {
+  if (!hasPassedCommitCheck) {
     const log = logger.error(commentMessage(totalCommits, minCommitsThisYear, "commit"));
     await addCommentToIssue(context, log?.logMessage.diff as string);
   }
 
-  if (hasFailedPrCheck) {
+  if (!hasPassedPrCheck) {
     const log = logger.error(commentMessage(stats.totalPRs, prs, "PR"));
     await addCommentToIssue(context, log?.logMessage.diff as string);
   }
 
-  if (hasFailedIssueCheck) {
+  if (!hasPassedIssueCheck) {
     const log = logger.error(commentMessage(stats.totalIssues, issues, "issue"));
     await addCommentToIssue(context, log?.logMessage.diff as string);
   }
 
-  if (hasFailedStarCheck) {
+  if (!hasPassedStarCheck) {
     const log = logger.error(commentMessage(stats.totalStars, stars, "star"));
     await addCommentToIssue(context, log?.logMessage.diff as string);
   }
@@ -44,5 +44,5 @@ export async function handleStatChecks(context: Context, token: string, user: st
     totalStars: stats.totalStars,
   });
 
-  return !!(hasFailedCommitCheck || hasFailedPrCheck || hasFailedIssueCheck || hasFailedStarCheck);
+  return hasPassedCommitCheck && hasPassedPrCheck && hasPassedIssueCheck && hasPassedStarCheck;
 }

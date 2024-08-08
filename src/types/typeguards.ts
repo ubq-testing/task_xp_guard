@@ -1,14 +1,14 @@
 import { Context } from "./context";
+import { StatsResponse, UserResponse } from "./shared";
 
-/**
- * Typeguards are most helpful when you have a union type and you want to narrow it down to a specific one.
- * In other words, if `SupportedEvents` has multiple types then these restrict the scope
- * of `context` to a specific event payload.
- */
+export function isStartCommandEvent(context: Context): context is Context<"issue_comment.created"> {
+  return context.eventName === "issue_comment.created" && context.payload.comment.body.match(/\/start/) !== null;
+}
 
-/**
- * Restricts the scope of `context` to the `issue_comment.created` payload.
- */
-export function isIssueCommentEvent(context: Context): context is Context<"issue_comment.created"> {
-  return context.eventName === "issue_comment.created";
+export function isUserResponse(res: UserResponse | StatsResponse): res is UserResponse {
+  return "repositories" in res.user
+}
+
+export function isStatsResponse(res: UserResponse | StatsResponse): res is StatsResponse {
+  return "pullRequests" in res.user
 }

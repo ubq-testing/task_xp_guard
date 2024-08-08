@@ -1,9 +1,7 @@
 {
   "name": "task-xp-guard",
   "description": "Guard tasks via label filters based on experience.",
-  "ubiquity:listeners": [
-    "issue_comment.created"
-  ],
+  "ubiquity:listeners": ["issue_comment.created"],
   "commands": {
     "start": {
       "ubiquity:example": "/start",

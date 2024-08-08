@@ -3,7 +3,7 @@ import { StaticDecode, Type as T } from "@sinclair/typebox";
 import { StandardValidator } from "typebox-validators";
 import { RestEndpointMethodTypes } from "@octokit/rest";
 
-export type CommitsSearch = RestEndpointMethodTypes["search"]["commits"]["response"]
+export type CommitsSearch = RestEndpointMethodTypes["search"]["commits"]["response"];
 
 export interface PluginInputs<T extends SupportedEventsU = SupportedEventsU, TU extends SupportedEvents[T] = SupportedEvents[T]> {
   stateId: string;
@@ -18,8 +18,8 @@ export const pluginSettingsSchema = T.Object(
   {
     minAccountAgeInDays: T.Number(), // Minimum account age in days,
     /**
-     * Labels that indicate what to guard. 
-     * i.e "Solidity" 
+     * Labels that indicate what to guard.
+     * i.e "Solidity"
      * Full issue label would be "Solidity: (arbitrary string)"
      */
     labelFilters: T.Array(T.String()),
@@ -38,14 +38,12 @@ export const pluginSettingsSchema = T.Object(
   {
     default: {
       minAccountAgeInDays: 365,
-      labelFilters: [
-        "Solidity",
-      ],
+      labelFilters: ["Solidity"],
       xpTiers: {
         "N/A": 0,
-        "Junior": 5,
-        "Mid": 20,
-        "Pro": 50,
+        Junior: 5,
+        Mid: 20,
+        Pro: 50,
       },
       statThresholds: {
         stars: 1,

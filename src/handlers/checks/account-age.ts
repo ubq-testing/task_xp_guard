@@ -10,9 +10,7 @@ export async function accountAgeHandler(context: Context) {
 
   const created = new Date(user.data.created_at);
   const age = Math.round((Date.now() - created.getTime()) / (1000 * 60 * 60 * 24));
-  const {
-    minAccountAgeInDays,
-  } = config;
+  const { minAccountAgeInDays } = config;
 
   if (age < minAccountAgeInDays || isNaN(age)) {
     logger.error(`${sender.login} has not met the minimum account age requirement of ${minAccountAgeInDays} days`);

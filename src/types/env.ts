@@ -4,7 +4,7 @@ import "dotenv/config";
 import { StandardValidator } from "typebox-validators";
 
 export const envSchema = T.Object({
-    // GITHUB_TOKEN: T.String(),
+  // GITHUB_TOKEN: T.String(),
 });
 
 export const envValidator = new StandardValidator(envSchema);

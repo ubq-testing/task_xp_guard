@@ -17,7 +17,7 @@ const LANGS_QUERY = `
           }
         }
       }
-    `
+    `;
 
 const GRAPHQL_REPOS_FIELD = `
   repositories(first: 100, ownerAffiliations: OWNER, orderBy: {direction: DESC, field: STARGAZERS}, after: $after) {
@@ -79,4 +79,4 @@ export const GRAPHQL_QUERIES = {
   LANGS: LANGS_QUERY,
   REPOS: GRAPHQL_REPOS_QUERY,
   STATS: GRAPHQL_STATS_QUERY,
-}
+};

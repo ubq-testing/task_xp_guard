@@ -1,11 +1,7 @@
 {
   "name": "task-xp-guard",
-  "description": "Guard tasks via label filters based on experience.",
-  "ubiquity:listeners": ["issue_comment.created"],
-  "commands": {
-    "start": {
-      "ubiquity:example": "/start",
-      "description": "Runs in parrallel to the main command."
-    }
-  }
+  "description": "Restrict task access via label filters according to language proficiency.",
+  "ubiquity:listeners": [
+    "issues.assigned"
+  ]
 }

@@ -20,6 +20,7 @@ export interface PluginInputs<T extends SupportedEventsU = SupportedEventsU, TU 
 
 export const pluginSettingsSchema = T.Object(
   {
+    enableChecksForOrgMembers: T.Boolean(),
     minAccountAgeInDays: T.Number(), // Minimum account age in days,
     /**
      * Labels that indicate what to guard.
@@ -41,6 +42,7 @@ export const pluginSettingsSchema = T.Object(
   },
   {
     default: {
+      enableChecksForOrgMembers: false,
       minAccountAgeInDays: 365,
       labelFilters: ["Solidity"],
       xpTiers: {

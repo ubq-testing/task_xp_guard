@@ -14,7 +14,7 @@ export async function handleLabelChecks(context: Context, token: string, configL
     })
   );
   const issueLabels = context.payload.issue.labels
-    .map((label) => {
+    ?.map((label) => {
       const rankCaptureRegex = /\(([^)]+)\)/;
       if (label.name.includes(":")) {
         return {
@@ -26,9 +26,9 @@ export async function handleLabelChecks(context: Context, token: string, configL
     .filter((label) => label !== undefined);
 
   // find the label we wish to use as our guard
-  const labelFilters_ = issueLabels.filter((label) => configLabelFilters.some((filter) => filter.toLowerCase() === label?.name));
+  const labelFilters_ = issueLabels?.filter((label) => configLabelFilters.some((filter) => filter.toLowerCase() === label?.name));
 
-  if (labelFilters_.length === 0) {
+  if (!labelFilters_?.length) {
     logger.info(`No label guard found for ${user}`);
     return true;
   }

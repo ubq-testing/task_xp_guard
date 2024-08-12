@@ -2,11 +2,11 @@ import { Context } from "../../types";
 import { addCommentToIssue } from "../../shared/comment";
 import { fetchAccountStats } from "../fetching/fetch-account-stats";
 
-export async function handleStatChecks(context: Context, token: string, user: string, minCommitsThisYear: number, prs: number, issues: number, stars: number) {
+export async function handleStatChecks(context: Context, token: string, user: string, minCommits: number, prs: number, issues: number, stars: number) {
   const { logger } = context;
   const stats = await fetchAccountStats(token, user);
 
-  const hasPassedCommitCheck = stats.totalCommits > minCommitsThisYear;
+  const hasPassedCommitCheck = stats.totalCommits > minCommits;
   const hasPassedPrCheck = stats.totalPRs > prs;
   const hasPassedIssueCheck = stats.totalIssues > issues;
   const hasPassedStarCheck = stats.totalStars > stars;
@@ -18,7 +18,7 @@ export async function handleStatChecks(context: Context, token: string, user: st
   }
 
   if (!hasPassedCommitCheck) {
-    msg.push(logger.error(commentMessage(stats.totalCommits, minCommitsThisYear, "commit"))?.logMessage.diff);
+    msg.push(logger.error(commentMessage(stats.totalCommits, minCommits, "commit"))?.logMessage.diff);
   }
 
   if (!hasPassedPrCheck) {

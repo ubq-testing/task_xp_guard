@@ -59,7 +59,7 @@ async function checkUserExperience(context: Context, token: string, user: string
     config: {
       labelFilters,
       xpTiers,
-      statThresholds: { issues, minCommitsThisYear, prs, stars },
+      statThresholds: { issues, minCommits, prs, stars },
     },
   } = context;
 
@@ -77,7 +77,7 @@ async function checkUserExperience(context: Context, token: string, user: string
   );
 
   const hasPassedLabelChecks = await handleLabelChecks(context, token, labelFilters, tiers, user);
-  const hasPassedStatChecks = await handleStatChecks(context, token, user, minCommitsThisYear, prs, issues, stars);
+  const hasPassedStatChecks = await handleStatChecks(context, token, user, minCommits, prs, issues, stars);
 
   // if either of the checks fail, we'll remove the user
   return hasPassedStatChecks && hasPassedLabelChecks;

@@ -23,6 +23,10 @@ export interface PluginInputs<T extends SupportedEventsU = SupportedEventsU, TU 
 
 export const pluginSettingsSchema = T.Object(
   {
+    /**
+     * By default we don't check org members. Enable this
+     * to check org members as well.
+     */
     enableChecksForOrgMembers: T.Boolean(),
     minAccountAgeInDays: T.Number(), // Minimum account age in days,
     /**
@@ -38,7 +42,7 @@ export const pluginSettingsSchema = T.Object(
     xpTiers: T.Record(T.String(), T.Number()),
     statThresholds: T.Object({
       stars: T.Number(), // Minimum number of stars
-      minCommitsThisYear: T.Number(), // Minimum number of commits
+      minCommits: T.Number(), // Minimum number of commits
       prs: T.Number(), // Minimum number of PRs
       issues: T.Number(), // Minimum number of issues
     }),
@@ -56,7 +60,7 @@ export const pluginSettingsSchema = T.Object(
       },
       statThresholds: {
         stars: 1,
-        minCommitsThisYear: 1,
+        minCommits: 1,
         prs: 1,
         issues: 1,
       },

@@ -5,9 +5,6 @@ import { LogLevel, Logs } from "@ubiquity-dao/ubiquibot-logger";
 import { handleExperienceChecks } from "./handlers/handle-xp-check";
 import manifest from "../manifest.json";
 
-/**
- * The main plugin function. Split for easier testing.
- */
 export async function runPlugin(context: Context, token: string) {
   const { logger, eventName } = context;
 

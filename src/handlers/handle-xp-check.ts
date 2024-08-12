@@ -2,7 +2,7 @@ import { Context } from "../types";
 import { addCommentToIssue } from "../shared/comment";
 import { handleLabelChecks } from "./checks/label";
 import { handleStatChecks } from "./checks/stats";
-import { accountAgeHandler } from "./checks/account-age";
+import { checkAccountAge } from "./checks/account-age";
 
 export async function handleExperienceChecks(context: Context, token: string) {
   const {
@@ -51,7 +51,7 @@ async function checkUserExperience(context: Context, token: string, user: string
     },
   } = context;
 
-  if (!(await accountAgeHandler(context, user))) {
+  if (!(await checkAccountAge(context, user))) {
     const log = context.logger.error(`${user} has not met the minimum account age requirement`);
     await addCommentToIssue(context, log?.logMessage.diff as string);
     return false;

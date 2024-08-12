@@ -1,3 +1,6 @@
+import { graphql } from "@octokit/graphql";
+import { validate } from "@octokit/graphql-schema";
+
 const LANGS_QUERY = `
       query userInfo($login: String!) {
         user(login: $login) {
@@ -74,6 +77,21 @@ const GRAPHQL_STATS_QUERY = `
     }
   }
 `;
+
+function validateQueries() {
+  const errors = [
+    validate(LANGS_QUERY),
+    validate(GRAPHQL_REPOS_QUERY),
+    validate(GRAPHQL_STATS_QUERY)
+  ].filter(Boolean).flatMap((error) => error);
+
+  if (errors.length) {
+    console.log()
+    throw new Error(errors.join("\n"));
+  }
+}
+
+validateQueries();
 
 export const GRAPHQL_QUERIES = {
   LANGS: LANGS_QUERY,

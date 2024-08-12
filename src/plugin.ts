@@ -1,9 +1,8 @@
 import { Octokit } from "@octokit/rest";
-import { Env, PluginInputs } from "./types";
+import { PluginInputs } from "./types";
 import { Context } from "./types";
 import { LogLevel, Logs } from "@ubiquity-dao/ubiquibot-logger";
 import { handleExperienceChecks } from "./handlers/handle-xp-check";
-import manifest from "../manifest.json";
 
 /**
  * The main plugin function. Split for easier testing.
@@ -37,7 +36,7 @@ export async function runPlugin(context: Context, token: string) {
 /**
  * How a worker executes the plugin.
  */
-export async function plugin(inputs: PluginInputs, env: Env) {
+export async function plugin(inputs: PluginInputs) {
   const octokit = new Octokit({ auth: inputs.authToken });
 
   const context: Context = {
@@ -45,7 +44,6 @@ export async function plugin(inputs: PluginInputs, env: Env) {
     payload: inputs.eventPayload,
     config: inputs.settings,
     octokit,
-    env,
     logger: new Logs("info" as LogLevel),
   };
 

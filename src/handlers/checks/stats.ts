@@ -11,28 +11,26 @@ export async function handleStatChecks(context: Context, token: string, user: st
   const hasPassedIssueCheck = stats.totalIssues > issues;
   const hasPassedStarCheck = stats.totalStars > stars;
 
+  const msg = [];
+
   function commentMessage(a: number, b: number, type: string) {
     return `${user} does not meet the minimum ${type} requirement. Required: ${b}, Actual: ${a}`;
   }
 
   if (!hasPassedCommitCheck) {
-    const log = logger.error(commentMessage(stats.totalCommits, minCommitsThisYear, "commit"));
-    await addCommentToIssue(context, log?.logMessage.diff as string);
+    msg.push(logger.error(commentMessage(stats.totalCommits, minCommitsThisYear, "commit"))?.logMessage.diff);
   }
 
   if (!hasPassedPrCheck) {
-    const log = logger.error(commentMessage(stats.totalPRs, prs, "PR"));
-    await addCommentToIssue(context, log?.logMessage.diff as string);
+    msg.push(logger.error(commentMessage(stats.totalPRs, prs, "PR"))?.logMessage.diff);
   }
 
   if (!hasPassedIssueCheck) {
-    const log = logger.error(commentMessage(stats.totalIssues, issues, "issue"));
-    await addCommentToIssue(context, log?.logMessage.diff as string);
+    msg.push(logger.error(commentMessage(stats.totalIssues, issues, "issue"))?.logMessage.diff);
   }
 
   if (!hasPassedStarCheck) {
-    const log = logger.error(commentMessage(stats.totalStars, stars, "star"));
-    await addCommentToIssue(context, log?.logMessage.diff as string);
+    msg.push(logger.error(commentMessage(stats.totalStars, stars, "star"))?.logMessage.diff);
   }
 
   logger.info(`${user} stats: `, {
@@ -41,6 +39,10 @@ export async function handleStatChecks(context: Context, token: string, user: st
     totalIssues: stats.totalIssues,
     totalStars: stats.totalStars,
   });
+
+  if (msg.length) {
+    await addCommentToIssue(context, msg.join("\n"));
+  }
 
   return hasPassedCommitCheck && hasPassedPrCheck && hasPassedIssueCheck && hasPassedStarCheck;
 }

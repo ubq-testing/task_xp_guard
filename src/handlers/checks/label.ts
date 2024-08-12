@@ -25,8 +25,8 @@ export async function handleLabelChecks(context: Context, token: string, configL
     })
     .filter((label) => label !== undefined);
 
-  // find the label we wish to use as our guard
-  const labelFilters_ = issueLabels?.filter((label) => configLabelFilters.some((filter) => filter.toLowerCase() === label?.name));
+  // find the label(s) we wish to use as our guard(s)
+  const labelFilters_ = issueLabels?.filter((label) => configLabelFilters.some((filter) => filter.toLowerCase() === label.name));
 
   if (!labelFilters_?.length) {
     logger.info(`No label guard found for ${user}`);
@@ -36,19 +36,19 @@ export async function handleLabelChecks(context: Context, token: string, configL
   const msg: string[] = [];
 
   const { highestTieredDuplicates, msg: duplicateMsgs } = await findAndRemoveDuplicateFilters(labelFilters_, xpTiers);
-  const checked = await checkLabelGuards(context, normalizedUserLanguages, highestTieredDuplicates, xpTiers, user);
+  const labelChecks = await checkLabelGuards(context, normalizedUserLanguages, highestTieredDuplicates, xpTiers, user);
 
-  if (duplicateMsgs.length > 0 || checked.msg.length > 0) {
+  if (duplicateMsgs.length > 0 || labelChecks.msg.length > 0) {
     msg.push(duplicateMsgs.join(""));
     if (msg.length > 0) {
-      msg.push(checked.msg.join(", "));
+      msg.push(labelChecks.msg.join(", "));
     } else {
-      msg.push(`\`\`\`diff\n${checked.msg.join(", ")}`);
+      msg.push(`\`\`\`diff\n${labelChecks.msg.join(", ")}`);
     }
     await addCommentToIssue(context, msg.join("\n"));
   }
 
-  return checked.hasPassed;
+  return labelChecks.hasPassed;
 }
 
 async function findAndRemoveDuplicateFilters(labelFilters: { name: string; tier: string }[], xpTiers: Record<string, number>) {

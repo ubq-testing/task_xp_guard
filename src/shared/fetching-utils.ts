@@ -2,12 +2,7 @@ import { graphql } from "@octokit/graphql";
 import { RequestParameters } from "@octokit/graphql/dist-types/types";
 import { UserStats } from "../types";
 
-export async function graphqlFetchRetrier(
-  variables: RequestParameters,
-  token: string,
-  query: string,
-  retries = 3
-): Promise<{ user: UserStats }> {
+export async function graphqlFetchRetrier(variables: RequestParameters, token: string, query: string, retries = 3): Promise<{ user: UserStats }> {
   const graphqlWithAuth = graphql.defaults({
     headers: {
       authorization: `token ${token}`,

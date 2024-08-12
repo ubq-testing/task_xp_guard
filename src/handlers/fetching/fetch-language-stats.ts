@@ -6,14 +6,15 @@ export async function fetchTopLanguages(username: string, token: string, sizeWei
   const { user } = await graphqlFetchRetrier({ login: username }, token, GRAPHQL_QUERIES.LANGS);
 
   if (!user) {
-    return []
+    return [];
   }
   if (!user.repositories) {
-    return []
+    return [];
   }
 
   // data taken from graphql query
-  const langData = user?.repositories?.nodes?.filter((repo) => (repo?.languages?.edges?.length || 0) > 0)
+  const langData = user?.repositories?.nodes
+    ?.filter((repo) => (repo?.languages?.edges?.length || 0) > 0)
     .flatMap((repo) => repo?.languages?.edges)
     .filter((lang) => lang !== null && lang !== undefined)
     .reduce(
@@ -32,21 +33,23 @@ export async function fetchTopLanguages(username: string, token: string, sizeWei
     );
 
   if (!langData) {
-    return []
+    return [];
   }
 
   // weight the languages by size and count
-  Object.values(langData).map((lang) => {
+  Object.values(langData).forEach((lang) => {
     lang.size = Math.pow(lang.size, sizeWeight) * Math.pow(lang.count, countWeight);
     return lang;
-  })
+  });
 
   // determine the total size of the languages
   const totalSize = Object.values(langData).reduce((acc, lang) => acc + lang.size, 0);
 
   // calculate the percentage of each language and drop any that are less than 1%
-  return Object.values(langData).map((lang) => {
-    const percentage = parseFloat(((lang.size / totalSize) * 100).toFixed(2));
-    return { ...lang, percentage };
-  }).filter((lang) => lang.percentage > 1);
+  return Object.values(langData)
+    .map((lang) => {
+      const percentage = parseFloat(((lang.size / totalSize) * 100).toFixed(2));
+      return { ...lang, percentage };
+    })
+    .filter((lang) => lang.percentage > 1);
 }

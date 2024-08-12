@@ -84,7 +84,7 @@ async function fetchGithubUserStats({ token, username }: { token: string; userna
 /**
  * Scales the user's stats to a percentile rank based
  * on the median of each stat and the weight given to each stat.
- * 
+ *
  * The rank is calculated as follows:
  * - For each stat, calculate the percentile rank of the user's stat
  *   based on the median of that stat.
@@ -92,14 +92,14 @@ async function fetchGithubUserStats({ token, username }: { token: string; userna
  * - Sum the weighted percentile ranks and divide by the total weight.
  * - Subtract the sum from 1 to get the final rank.
  * - Multiply by 100 to get the rank as a percentage.
- * 
+ *
  * Median values and weights are based on the author's opinion and should
  * reflect a reasonable distribution of stats for a typical user.
- * 
+ *
  * Does not include dollars-earned yet but will be added in the future.
- * 
+ *
  * Swapping these weights and medians in place of the flat-rate config
- * settings would allow for a more dynamic ranking system but would 
+ * settings would allow for a more dynamic ranking system but would
  * increase the complexity for partners to setup and use.
  */
 export function calculateRank({
@@ -141,7 +141,7 @@ export function calculateRank({
       REVIEWS_WEIGHT * exponentialCdf(reviews / REVIEWS_MEDIAN) +
       STARS_WEIGHT * logNormalCdf(stars / STARS_MEDIAN) +
       FOLLOWERS_WEIGHT * logNormalCdf(followers / FOLLOWERS_MEDIAN)) /
-    TOTAL_WEIGHT;
+      TOTAL_WEIGHT;
 
   return Number((rank * 100).toFixed(2));
 }

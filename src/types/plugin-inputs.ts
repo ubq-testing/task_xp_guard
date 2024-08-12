@@ -7,8 +7,7 @@ export type UserStats = User & {
   openIssues: { totalCount: number };
   closedIssues: { totalCount: number };
   mergedPullRequests: { totalCount: number };
-}
-
+};
 
 export interface PluginInputs<T extends SupportedEventsU = SupportedEventsU, TU extends SupportedEvents[T] = SupportedEvents[T]> {
   stateId: string;

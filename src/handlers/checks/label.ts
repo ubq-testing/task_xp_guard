@@ -13,15 +13,17 @@ export async function handleLabelChecks(context: Context, token: string, configL
       };
     })
   );
-  const issueLabels = context.payload.issue.labels.map((label) => {
-    const rankCaptureRegex = /\(([^)]+)\)/;
-    if (label.name.includes(":")) {
-      return {
-        name: label.name.split(":")[0].toLowerCase(),
-        tier: rankCaptureRegex.exec(label.name)?.[1]?.toLowerCase() || "n/a",
-      };
-    }
-  }).filter((label) => label !== undefined);
+  const issueLabels = context.payload.issue.labels
+    .map((label) => {
+      const rankCaptureRegex = /\(([^)]+)\)/;
+      if (label.name.includes(":")) {
+        return {
+          name: label.name.split(":")[0].toLowerCase(),
+          tier: rankCaptureRegex.exec(label.name)?.[1]?.toLowerCase() || "n/a",
+        };
+      }
+    })
+    .filter((label) => label !== undefined);
 
   // find the label we wish to use as our guard
   const labelFilters_ = issueLabels.filter((label) => configLabelFilters.some((filter) => filter.toLowerCase() === label?.name));
@@ -123,25 +125,16 @@ async function checkLabelGuards(
     }
 
     if (userLangPercentage < tierValue) {
-      const logMessage = logger.error(
-        `${user} does not meet the required tier for ${labelFilter.charAt(0).toUpperCase() + labelFilter.slice(1)}`
-      );
+      const logMessage = logger.error(`${user} does not meet the required tier for ${labelFilter.charAt(0).toUpperCase() + labelFilter.slice(1)}`);
       hasPassed = false;
       msg.push(`\n! ${logMessage?.logMessage.raw}`);
     }
   }
 
-  if (hasPassed) {
-    logger.info(`${user} has passed the required language guards for ${normalizedLabelFilters.join(", ")}`, {
-      userLanguages: Array.from(userLanguages),
-      labelFilters,
-    });
-  } else {
-    logger.error(`${user} has failed the required language guards: `, {
-      userLanguages: Array.from(userLanguages),
-      labelFilters,
-    });
-  }
+  logger.info(`${user} has ${hasPassed ? "passed" : "failed"} the required language guards: `, {
+    userLanguages: Array.from(userLanguages),
+    labelFilters,
+  });
 
   return { hasPassed, msg };
 }

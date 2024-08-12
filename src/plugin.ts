@@ -12,7 +12,7 @@ import manifest from "../manifest.json";
 export async function runPlugin(context: Context, token: string) {
   const { logger, eventName } = context;
 
-  if (isStartCommandEvent(context)) {
+  if (await isStartCommandEvent(context)) {
     return await handleExperienceChecks(context, token);
   } else {
     throw logger.error(`Unsupported event: ${eventName}`)?.logMessage.raw;

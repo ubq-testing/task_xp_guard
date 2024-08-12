@@ -17,7 +17,7 @@ export async function handleExperienceChecks(context: Context, token: string) {
   }
 
   // for team scenarios
-  const usernames = comment.body.match(/@(\w+)/g);
+  const usernames = comment.body.match(/@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,37}[a-zA-Z0-9])?/g);
   if (usernames) {
     users = [...users, ...usernames.map((username) => username.slice(1))];
   }

@@ -1,7 +1,7 @@
+import { Maybe } from "@octokit/graphql-schema";
 import { calculateRank, graphqlFetchRetrier } from "../../shared/fetching-utils";
 import { GRAPHQL_QUERIES } from "../../shared/queries";
-import { StatsResponse } from "../../types/shared";
-import { isStatsResponse } from "../../types/typeguards";
+import { UserStats } from "../../types";
 
 export async function fetchAccountStats(token: string, username: string) {
   const stats = {
@@ -14,7 +14,7 @@ export async function fetchAccountStats(token: string, username: string) {
     totalIssues: 0,
     totalStars: 0,
     contributedTo: 0,
-    rank: { level: "C", percentile: 100 },
+    rank: 0,
   };
 
   const user = await statsFetcher({
@@ -29,14 +29,14 @@ export async function fetchAccountStats(token: string, username: string) {
 
   stats.totalCommits = user.contributionsCollection.totalCommitContributions;
   stats.totalPRs = user.pullRequests.totalCount;
+  stats.totalReviews = user.contributionsCollection.totalPullRequestReviewContributions;
+  stats.contributedTo = user.repositoriesContributedTo.totalCount;
+  stats.totalStars = user.repositories.nodes?.reduce((acc, repo) => acc + (repo?.stargazerCount || 0), 0) || 0;
+
+  stats.totalIssues = user.openIssues.totalCount + user.closedIssues.totalCount;
   stats.totalPRsMerged = user.mergedPullRequests.totalCount;
   stats.mergedPRsPercentage = (user.mergedPullRequests.totalCount / user.pullRequests.totalCount) * 100;
-  stats.totalReviews = user.contributionsCollection.totalPullRequestReviewContributions;
-  stats.totalIssues = user.openIssues.totalCount + user.closedIssues.totalCount;
-  stats.contributedTo = user.repositoriesContributedTo.totalCount;
-  stats.totalStars = user.repositories.nodes?.reduce((prev: number, curr: { stargazers: { totalCount: number } }) => prev + curr.stargazers.totalCount, 0) || 0;
 
-  // could be refactored to be aligned with our actual XP system
   stats.rank = calculateRank({
     all_commits: true,
     commits: stats.totalCommits,
@@ -54,7 +54,7 @@ async function statsQuery(
   variables: {
     login: string;
     first?: number;
-    after?: string;
+    after?: Maybe<string>;
     includeMergedPullRequests?: boolean;
   },
   token: string
@@ -67,7 +67,7 @@ async function statsFetcher({ token, username }: { token: string; username: stri
   let stats;
   let hasNextPage = true;
   let endCursor;
-  let user = {} as StatsResponse["user"];
+  let user = {} as UserStats;
 
   while (hasNextPage) {
     const vars = {
@@ -76,14 +76,9 @@ async function statsFetcher({ token, username }: { token: string; username: stri
       after: endCursor,
       includeMergedPullRequests: true,
     };
-    const data = await statsQuery(vars, token);
 
-    if (!isStatsResponse(data)) {
-      return;
-    }
-
-    user = data.user;
-    const repoNodes = user.repositories.nodes;
+    const { user: user_ } = await statsQuery(vars, token);
+    const repoNodes = user_.repositories.nodes || [];
 
     if (stats) {
       stats.push(...repoNodes);
@@ -91,8 +86,9 @@ async function statsFetcher({ token, username }: { token: string; username: stri
       stats = repoNodes;
     }
 
-    hasNextPage = user.repositories.pageInfo.hasNextPage;
-    endCursor = user.repositories.pageInfo.endCursor;
+    hasNextPage = user_.repositories.pageInfo.hasNextPage;
+    endCursor = user_.repositories.pageInfo.endCursor;
+    user = user_;
   }
 
   return { ...user, repositories: { nodes: stats } };

@@ -1,14 +1,12 @@
 import { Context } from "../../types";
 import { addCommentToIssue } from "../../shared/comment";
-import { commitsFetcher } from "../fetching/fetch-commits";
 import { fetchAccountStats } from "../fetching/fetch-account-stats";
 
 export async function handleStatChecks(context: Context, token: string, user: string, minCommitsThisYear: number, prs: number, issues: number, stars: number) {
   const { logger } = context;
   const stats = await fetchAccountStats(token, user);
-  const totalCommits = await commitsFetcher(context, user);
 
-  const hasPassedCommitCheck = totalCommits > minCommitsThisYear;
+  const hasPassedCommitCheck = stats.totalCommits > minCommitsThisYear;
   const hasPassedPrCheck = stats.totalPRs > prs;
   const hasPassedIssueCheck = stats.totalIssues > issues;
   const hasPassedStarCheck = stats.totalStars > stars;
@@ -18,7 +16,7 @@ export async function handleStatChecks(context: Context, token: string, user: st
   }
 
   if (!hasPassedCommitCheck) {
-    const log = logger.error(commentMessage(totalCommits, minCommitsThisYear, "commit"));
+    const log = logger.error(commentMessage(stats.totalCommits, minCommitsThisYear, "commit"));
     await addCommentToIssue(context, log?.logMessage.diff as string);
   }
 
@@ -38,7 +36,7 @@ export async function handleStatChecks(context: Context, token: string, user: st
   }
 
   logger.info(`${user} stats: `, {
-    totalCommits,
+    totalCommits: stats.totalCommits,
     totalPRs: stats.totalPRs,
     totalIssues: stats.totalIssues,
     totalStars: stats.totalStars,

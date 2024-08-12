@@ -26,11 +26,12 @@ export type UserResponse = {
   user: User;
 };
 
-export type Langs = {
+export type Lang = {
   name: string;
   size: number;
   count: number;
   color: string;
+  percentage?: number;
 };
 
 export type StatsResponse = {

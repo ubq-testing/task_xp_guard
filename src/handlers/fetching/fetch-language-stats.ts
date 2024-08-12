@@ -1,8 +1,9 @@
 import { graphqlFetchRetrier } from "../../shared/fetching-utils";
-import { Langs } from "../../types/shared";
+import { GRAPHQL_QUERIES } from "../../shared/queries";
+import { Lang } from "../../types/shared";
 
-export async function fetchTopLanguages(username: string, token: string, sizeWeight = 1, countWeight = 0) {
-  const { user } = await graphqlFetchRetrier({ login: username }, token);
+export async function fetchTopLanguages(username: string, token: string, sizeWeight = 1, countWeight = 0): Promise<Lang[]> {
+  const { user } = await graphqlFetchRetrier({ login: username }, token, GRAPHQL_QUERIES.LANGS);
 
   if (!user) {
     return []
@@ -27,7 +28,7 @@ export async function fetchTopLanguages(username: string, token: string, sizeWei
         }
         return acc;
       },
-      {} as Record<string, Langs>
+      {} as Record<string, Lang>
     );
 
   if (!langData) {
@@ -35,26 +36,16 @@ export async function fetchTopLanguages(username: string, token: string, sizeWei
   }
 
   // weight the languages by size and count
-  Object.values(langData).forEach((lang) => {
+  Object.values(langData).map((lang) => {
     lang.size = Math.pow(lang.size, sizeWeight) * Math.pow(lang.count, countWeight);
-  });
-
-  // sort the languages by most used
-  const assorted = Object.keys(langData)
-    .sort((a, b) => langData[b].size - langData[a].size)
-    .reduce(
-      (result, key) => {
-        result[key as keyof typeof result] = langData[key];
-        return result;
-      },
-      {} as Record<string, Langs>
-    );
+    return lang;
+  })
 
   // determine the total size of the languages
-  const totalSize = Object.values(assorted).reduce((acc, lang) => acc + lang.size, 0);
+  const totalSize = Object.values(langData).reduce((acc, lang) => acc + lang.size, 0);
 
   // calculate the percentage of each language and drop any that are less than 1%
-  return Object.values(assorted).map((lang) => {
+  return Object.values(langData).map((lang) => {
     const percentage = parseFloat(((lang.size / totalSize) * 100).toFixed(2));
     return { ...lang, percentage };
   }).filter((lang) => lang.percentage > 1);

@@ -5,9 +5,6 @@ import { Value } from "@sinclair/typebox/value";
 import { pluginSettingsSchema, PluginInputs, pluginSettingsValidator } from "./types";
 import { plugin } from "./plugin";
 
-/**
- * How a GitHub action executes the plugin.
- */
 export async function run() {
   const payload = github.context.payload.inputs;
 

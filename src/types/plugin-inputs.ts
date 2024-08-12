@@ -3,10 +3,7 @@ import { StaticDecode, Type as T } from "@sinclair/typebox";
 import { StandardValidator } from "typebox-validators";
 import { User } from "@octokit/graphql-schema";
 
-export type UserStats = Pick<
-  User,
-  "login" | "pullRequests" | "repositoriesContributedTo" | "repositories" | "followers" | "following" | "starredRepositories" | "contributionsCollection"
-> & {
+export type UserStats = Pick<User, "pullRequests" | "repositoriesContributedTo" | "repositories" | "followers" | "contributionsCollection"> & {
   openIssues: { totalCount: number };
   closedIssues: { totalCount: number };
   mergedPullRequests: { totalCount: number };

@@ -4,7 +4,7 @@ import { UserStats } from "../../types";
 
 export async function fetchAccountStats(token: string, username: string) {
   const stats = {
-    name: "",
+    name: username,
     totalPRs: 0,
     totalPRsMerged: 0,
     mergedPRsPercentage: 0,
@@ -22,7 +22,6 @@ export async function fetchAccountStats(token: string, username: string) {
   });
 
   if (!user) {
-    stats.name = username;
     return stats;
   }
 

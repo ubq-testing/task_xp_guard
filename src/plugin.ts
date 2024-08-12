@@ -3,6 +3,7 @@ import { PluginInputs } from "./types";
 import { Context } from "./types";
 import { LogLevel, Logs } from "@ubiquity-dao/ubiquibot-logger";
 import { handleExperienceChecks } from "./handlers/handle-xp-check";
+import manifest from "../manifest.json";
 
 /**
  * The main plugin function. Split for easier testing.
@@ -17,7 +18,7 @@ export async function runPlugin(context: Context, token: string) {
       if (!isOk) {
         logger.info(`${user} failed the experience check, removing...`);
         try {
-          await context.octokit.issues.removeAssignees({
+          await context.octokit.rest.issues.removeAssignees({
             owner: context.payload.repository.owner.login,
             repo: context.payload.repository.name,
             issue_number: context.payload.issue.number,
@@ -48,4 +49,19 @@ export async function plugin(inputs: PluginInputs) {
   };
 
   await runPlugin(context, inputs.authToken);
+  await returnDataToKernel(context, inputs.stateId, {});
+}
+
+async function returnDataToKernel(context: Context, stateId: string, output: object) {
+  const { octokit, payload } = context;
+  await octokit.repos.createDispatchEvent({
+    owner: payload.repository.owner.login,
+    repo: payload.repository.name,
+    event_type: "return_data_to_ubiquibot_kernel",
+    client_payload: {
+      pluginName: manifest.name,
+      state_id: stateId,
+      output: JSON.stringify(output),
+    },
+  });
 }

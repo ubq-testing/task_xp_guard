@@ -5,7 +5,7 @@ export async function checkAccountAge(context: Context, username: string) {
   const { octokit, payload, logger, config } = context;
   const { sender } = payload;
 
-  const user = await octokit.users.getByUsername({ username });
+  const user = await octokit.rest.users.getByUsername({ username });
   const created = new Date(user.data.created_at);
   const ageInDays = Math.round((Date.now() - created.getTime()) / (1000 * 60 * 60 * 24));
   const { minAccountAgeInDays } = config;

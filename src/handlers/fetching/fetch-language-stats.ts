@@ -9,8 +9,7 @@ export type Lang = {
   percentage?: number;
 };
 
-
-export async function fetchTopLanguages(username: string, token: string, sizeWeight = 1, countWeight = 0): Promise<Lang[]> {
+export async function fetchTopLanguages(username: string, token: string): Promise<Lang[]> {
   const { user } = await graphqlFetchRetrier({ login: username }, token, GRAPHQL_QUERIES.LANGS);
 
   if (!user) {
@@ -46,7 +45,7 @@ export async function fetchTopLanguages(username: string, token: string, sizeWei
 
   // weight the languages by size and count
   Object.values(langData).forEach((lang) => {
-    lang.size = Math.pow(lang.size, sizeWeight) * Math.pow(lang.count, countWeight);
+    lang.size = Math.pow(lang.size, 1) * Math.pow(lang.count, 0);
     return lang;
   });
 

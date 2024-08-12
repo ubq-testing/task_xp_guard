@@ -11,29 +11,28 @@ export async function isOrgMember(context: Context, username?: string): Promise<
 async function getCollaboratorPermissionLevel(context: Context, username: string) {
   const owner = context.payload.repository.owner?.login;
   if (!owner) throw context.logger.error("No owner found in the repository!");
-  const response = await context.octokit.rest.repos.getCollaboratorPermissionLevel({
-    owner,
-    repo: context.payload.repository.name,
-    username,
-  });
-  return response.data.permission;
+  try {
+    const response = await context.octokit.rest.repos.getCollaboratorPermissionLevel({
+      owner,
+      repo: context.payload.repository.name,
+      username,
+    });
+    return response.data.permission;
+  } catch (err) {
+    return "n/a";
+  }
 }
 
 async function getMembershipForUser(context: Context, username: string) {
   if (!context.payload.organization) throw context.logger.error(`No organization found in payload!`);
 
   try {
-    await context.octokit.rest.orgs.checkMembershipForUser({
+    const { data: membership } = await context.octokit.rest.orgs.getMembershipForUser({
       org: context.payload.organization.login,
       username,
     });
-  } catch (e: unknown) {
+    return membership.role;
+  } catch (err) {
     return "n/a";
   }
-
-  const { data: membership } = await context.octokit.rest.orgs.getMembershipForUser({
-    org: context.payload.organization.login,
-    username,
-  });
-  return membership.role;
 }

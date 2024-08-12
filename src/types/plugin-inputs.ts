@@ -1,9 +1,14 @@
 import { SupportedEvents, SupportedEventsU } from "./context";
 import { StaticDecode, Type as T } from "@sinclair/typebox";
 import { StandardValidator } from "typebox-validators";
-import { RestEndpointMethodTypes } from "@octokit/rest";
+import { User } from "@octokit/graphql-schema";
 
-export type CommitsSearch = RestEndpointMethodTypes["search"]["commits"]["response"];
+export type UserStats = User & {
+  openIssues: { totalCount: number };
+  closedIssues: { totalCount: number };
+  mergedPullRequests: { totalCount: number };
+}
+
 
 export interface PluginInputs<T extends SupportedEventsU = SupportedEventsU, TU extends SupportedEvents[T] = SupportedEvents[T]> {
   stateId: string;

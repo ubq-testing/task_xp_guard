@@ -1,7 +1,8 @@
 import { Maybe } from "@octokit/graphql-schema";
-import { calculateRank, graphqlFetchRetrier } from "../../shared/fetching-utils";
+import { graphqlFetchRetrier } from "../../shared/fetching-utils";
 import { GRAPHQL_QUERIES } from "../../shared/queries";
 import { UserStats } from "../../types";
+import { calculateRank } from "../../shared/rank";
 
 export async function fetchAccountStats(token: string, username: string) {
   const stats = {

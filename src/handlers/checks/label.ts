@@ -93,13 +93,12 @@ async function checkLabelGuards(
 ) {
   const { logger } = context;
 
-  const labelTierMap = new Map(labelFilters.map(({ name, tier }) => [name, tier]));
   const userLanguageMap = new Map(Array.from(userLanguages).map(({ name, percentage }) => [name, percentage]));
 
   let hasPassed = true;
   const msg: string[] = [];
 
-  for (const labelFilter of labelFilters.map(({ name }) => name)) {
+  for (const { name: labelFilter, tier } of labelFilters) {
     const userLangPercentage = userLanguageMap.get(labelFilter);
 
     if (!userLangPercentage) {
@@ -108,8 +107,6 @@ async function checkLabelGuards(
       hasPassed = false;
       continue;
     }
-
-    const tier = labelTierMap.get(labelFilter) || "n/a";
 
     if (tier === "n/a") {
       logger.info("No label guard found, skipping...");

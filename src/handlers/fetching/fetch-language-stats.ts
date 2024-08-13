@@ -46,7 +46,6 @@ export async function fetchTopLanguages(username: string, token: string): Promis
   // weight the languages by size and count
   Object.values(langData).forEach((lang) => {
     lang.size = Math.pow(lang.size, 1) * Math.pow(lang.count, 0);
-    return lang;
   });
 
   // determine the total size of the languages

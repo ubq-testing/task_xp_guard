@@ -18,36 +18,52 @@ export interface PluginInputs<T extends SupportedEventsU = SupportedEventsU, TU 
   ref: string;
 }
 
+const HALF_YEAR = 365 / 2;
+
 export const pluginSettingsSchema = T.Object(
   {
     /**
      * By default we don't check org members. Enable this
      * to check org members as well.
      */
-    enableChecksForOrgMembers: T.Boolean(),
-    minAccountAgeInDays: T.Number(), // Minimum account age in days,
+    enableChecksForOrgMembers: T.Boolean({ default: false }),
+    minAccountAgeInDays: T.Number({ default: HALF_YEAR }), // Minimum account age in days,
     /**
      * Labels that indicate what to guard.
      * i.e "Solidity"
      * Full issue label would be "Solidity: (arbitrary string)"
      */
-    labelFilters: T.Array(T.String()),
+    labelFilters: T.Array(T.String(), { default: ["Solidity"] }),
     /**
      * XP tiers for the user. These should map directly to your
      * labelling schema (i.e. "Junior", "Mid", "Pro", "Level 1", "Level 2", etc)
      */
-    xpTiers: T.Record(T.String(), T.Number()),
+    xpTiers: T.Record(T.String(), T.Number(), {
+      default: {
+        "N/A": 0,
+        Junior: 5,
+        Mid: 20,
+        Pro: 50,
+      }
+    }),
     statThresholds: T.Object({
-      stars: T.Number(), // Minimum number of stars
-      minCommits: T.Number(), // Minimum number of commits
-      prs: T.Number(), // Minimum number of PRs
-      issues: T.Number(), // Minimum number of issues
+      stars: T.Number({ default: 1 }), // Minimum number of stars
+      minCommits: T.Number({ default: 1 }), // Minimum number of commits
+      prs: T.Number({ default: 1 }), // Minimum number of PRs
+      issues: T.Number({ default: 1 }), // Minimum number of issues
+    }, {
+      default: {
+        stars: 1,
+        minCommits: 1,
+        prs: 1,
+        issues: 1,
+      }
     }),
   },
   {
     default: {
       enableChecksForOrgMembers: false,
-      minAccountAgeInDays: 365,
+      minAccountAgeInDays: HALF_YEAR,
       labelFilters: ["Solidity"],
       xpTiers: {
         "N/A": 0,

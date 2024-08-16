@@ -40,44 +40,30 @@ export const pluginSettingsSchema = T.Object(
      */
     xpTiers: T.Record(T.String(), T.Number(), {
       default: {
-        "N/A": 0,
         Junior: 5,
         Mid: 20,
         Pro: 50,
-      }
+      },
     }),
-    statThresholds: T.Object({
-      stars: T.Number({ default: 1 }), // Minimum number of stars
-      minCommits: T.Number({ default: 1 }), // Minimum number of commits
-      prs: T.Number({ default: 1 }), // Minimum number of PRs
-      issues: T.Number({ default: 1 }), // Minimum number of issues
-    }, {
-      default: {
-        stars: 1,
-        minCommits: 1,
-        prs: 1,
-        issues: 1,
+    statThresholds: T.Object(
+      {
+        stars: T.Number({ default: 1 }), // Minimum number of stars
+        minCommits: T.Number({ default: 1 }), // Minimum number of commits
+        prs: T.Number({ default: 1 }), // Minimum number of PRs
+        issues: T.Number({ default: 1 }), // Minimum number of issues
+      },
+      {
+        default: {
+          stars: 1,
+          minCommits: 1,
+          prs: 1,
+          issues: 1,
+        },
       }
-    }),
+    ),
   },
   {
-    default: {
-      enableChecksForOrgMembers: false,
-      minAccountAgeInDays: HALF_YEAR,
-      labelFilters: ["Solidity"],
-      xpTiers: {
-        "N/A": 0,
-        Junior: 5,
-        Mid: 20,
-        Pro: 50,
-      },
-      statThresholds: {
-        stars: 1,
-        minCommits: 1,
-        prs: 1,
-        issues: 1,
-      },
-    },
+    default: {},
   }
 );
 

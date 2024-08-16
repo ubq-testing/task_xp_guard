@@ -5,7 +5,18 @@ export async function isOrgMember(context: Context, username?: string): Promise<
   const permissionLevel = await getCollaboratorPermissionLevel(context, username);
   const membership = await getMembershipForUser(context, username);
   const allowedRoles = ["admin", "billing_manager", "owner", "member", "maintainer", "write"];
-  return allowedRoles.includes(permissionLevel) || allowedRoles.includes(membership);
+
+  let isAllowed = false;
+
+  if (permissionLevel) {
+    isAllowed = allowedRoles.includes(permissionLevel);
+  }
+
+  if (membership) {
+    isAllowed = allowedRoles.includes(membership);
+  }
+
+  return isAllowed;
 }
 
 async function getCollaboratorPermissionLevel(context: Context, username: string) {
@@ -19,7 +30,7 @@ async function getCollaboratorPermissionLevel(context: Context, username: string
     });
     return response.data.permission;
   } catch (err) {
-    return "n/a";
+    return null;
   }
 }
 
@@ -33,6 +44,6 @@ async function getMembershipForUser(context: Context, username: string) {
     });
     return membership.role;
   } catch (err) {
-    return "n/a";
+    return null;
   }
 }

@@ -8,7 +8,7 @@ export async function handleLabelChecks(context: Context, token: string, configL
   const normalizedUserLanguages = new Set(
     Object.values(langs).map((lang) => {
       return {
-        name: lang.name.toLowerCase(),
+        name: lang.name?.toLowerCase() || "n/a",
         percentage: lang.percentage || 0,
       };
     })
@@ -26,9 +26,9 @@ export async function handleLabelChecks(context: Context, token: string, configL
     .filter((label) => label !== undefined);
 
   // find the label(s) we wish to use as our guard(s)
-  const labelFilters_ = issueLabels?.filter((label) => configLabelFilters.some((filter) => filter.toLowerCase() === label.name));
+  const labelFilters_ = issueLabels?.filter((label) => configLabelFilters.some((filter) => filter.toLowerCase() === label?.name));
 
-  if (!labelFilters_?.length) {
+  if (!labelFilters_?.length || !labelFilters_) {
     logger.info(`No label guard found for ${user}`);
     return true;
   }
@@ -51,12 +51,23 @@ export async function handleLabelChecks(context: Context, token: string, configL
   return labelChecks.hasPassed;
 }
 
-async function findAndRemoveDuplicateFilters(labelFilters: { name: string; tier: string }[], xpTiers: Record<string, number>) {
+async function findAndRemoveDuplicateFilters(labelFilters: ({ name: string; tier: string } | undefined)[], xpTiers: Record<string, number>) {
   const highestTierMap: Record<string, { name: string; tier: string }> = {};
+  const labels = labelFilters.filter((label) => label !== undefined);
+
+  if (!labels?.length || labels.length === 0) {
+    return {
+      highestTieredDuplicates: [],
+      msg: [],
+    };
+  }
 
   const msg: string[] = ["```diff\n! Duplicate filters found, defaulting to the highest tiered: "];
   let count = 0;
-  labelFilters.forEach((label) => {
+  labels.forEach((label) => {
+    if (!label) {
+      return;
+    }
     const currentTierValue = xpTiers[label.tier];
     const name = label.name.toLowerCase();
     const existingEntry = highestTierMap[name];

@@ -1,6 +1,4 @@
-import { validate } from "@octokit/graphql-schema";
-
-const LANGS_QUERY = `
+export const LANGS_QUERY = `
       query userInfo($login: String!) {
         user(login: $login) {
           repositories(ownerAffiliations: [OWNER, COLLABORATOR], isFork: false, first: 100) {
@@ -37,7 +35,7 @@ const GRAPHQL_REPOS_FIELD = `
   }
 `;
 
-const GRAPHQL_REPOS_QUERY = `
+export const GRAPHQL_REPOS_QUERY = `
   query userInfo($login: String!, $after: String) {
     user(login: $login) {
       ${GRAPHQL_REPOS_FIELD}
@@ -45,7 +43,7 @@ const GRAPHQL_REPOS_QUERY = `
   }
 `;
 
-const GRAPHQL_STATS_QUERY = `
+export const GRAPHQL_STATS_QUERY = `
   query userInfo($login: String!, $after: String, $includeMergedPullRequests: Boolean!) {
     user(login: $login) {
       name
@@ -76,16 +74,6 @@ const GRAPHQL_STATS_QUERY = `
     }
   }
 `;
-
-function validateQueries() {
-  const errors = [validate(LANGS_QUERY), validate(GRAPHQL_REPOS_QUERY), validate(GRAPHQL_STATS_QUERY)].filter(Boolean).flatMap((error) => error);
-
-  if (errors.length) {
-    throw new Error(errors.join("\n"));
-  }
-}
-
-validateQueries();
 
 export const GRAPHQL_QUERIES = {
   LANGS: LANGS_QUERY,

@@ -11,9 +11,18 @@ export async function handleExperienceChecks(context: Context, token: string) {
     config: { enableChecksForOrgMembers: shouldEnableChecksForOrgMembers },
   } = context;
 
-  const usernames = issue.assignees.length
-    ? issue.assignees.map((assignee) => assignee?.login).filter((a) => a !== undefined)
-    : [issue.assignee?.login].filter((a) => a !== undefined);
+  const usernames: string[] = [];
+
+  if (issue.assignees) {
+    issue.assignees.forEach((assignee) => {
+      if (!assignee?.login) {
+        return;
+      }
+      usernames.push(assignee.login);
+    });
+  } else if (issue.assignee) {
+    usernames.push(issue.assignee.login);
+  }
 
   if (!usernames.length) {
     const log = logger.error("No assignees found on the issue", { issue: issue.html_url, assignees: issue.assignees });

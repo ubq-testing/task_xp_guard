@@ -74,9 +74,3 @@ export const GRAPHQL_STATS_QUERY = `
     }
   }
 `;
-
-export const GRAPHQL_QUERIES = {
-  LANGS: LANGS_QUERY,
-  REPOS: GRAPHQL_REPOS_QUERY,
-  STATS: GRAPHQL_STATS_QUERY,
-};

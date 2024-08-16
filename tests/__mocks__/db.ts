@@ -9,6 +9,7 @@ export const db = factory({
     id: primaryKey(Number),
     name: String,
     login: String,
+    created_at: Date,
   },
   issue: {
     id: primaryKey(Number),
@@ -19,7 +20,6 @@ export const db = factory({
     owner: String,
     repo: String,
     labels: Array,
-    author_association: String,
     body: nullable(String),
     closed_at: nullable(Date),
     created_at: nullable(Date),

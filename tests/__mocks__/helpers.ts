@@ -40,6 +40,28 @@ export async function setupTests() {
   createComment("/Hello", 1);
 }
 
+export function createIssue(
+  title: string,
+  body: string,
+  number: number,
+  labels: string[],
+  assignee: {
+    login: string;
+    id: number;
+  }
+) {
+  db.issue.create({
+    ...issueTemplate,
+    id: number,
+    title,
+    body,
+    number,
+    labels: labels.map((name) => ({ name })),
+    assignee,
+    assignees: [assignee],
+  });
+}
+
 export function createComment(comment: string, commentId: number) {
   const isComment = db.issueComments.findFirst({
     where: {

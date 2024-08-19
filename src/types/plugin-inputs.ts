@@ -53,12 +53,7 @@ export const pluginSettingsSchema = T.Object(
         issues: T.Number({ default: 1 }), // Minimum number of issues
       },
       {
-        default: {
-          stars: 1,
-          minCommits: 1,
-          prs: 1,
-          issues: 1,
-        },
+        default: {},
       }
     ),
   },

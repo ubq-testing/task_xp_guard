@@ -1,5 +1,5 @@
 import { validate } from "@octokit/graphql-schema";
-import { LANGS_QUERY, GRAPHQL_REPOS_QUERY, GRAPHQL_STATS_QUERY } from "./queries";
+import { LANGS_QUERY, GRAPHQL_REPOS_QUERY, GRAPHQL_STATS_QUERY } from "../src/shared/queries";
 
 function validateQueries() {
   const errors = [validate(LANGS_QUERY), validate(GRAPHQL_REPOS_QUERY), validate(GRAPHQL_STATS_QUERY)].filter(Boolean).flatMap((error) => error);
@@ -10,9 +10,3 @@ function validateQueries() {
 }
 
 validateQueries();
-
-export const VALIDATED_GRAPHQL_QUERIES = {
-  LANGS: LANGS_QUERY,
-  REPOS: GRAPHQL_REPOS_QUERY,
-  STATS: GRAPHQL_STATS_QUERY,
-};

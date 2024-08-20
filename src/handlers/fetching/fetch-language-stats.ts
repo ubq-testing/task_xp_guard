@@ -1,5 +1,5 @@
 import { graphqlFetchRetrier } from "../../shared/fetching-utils";
-import { VALIDATED_GRAPHQL_QUERIES } from "../../shared/validate-queries";
+import { LANGS_QUERY } from "../../shared/queries";
 
 export type Lang = {
   size: number;
@@ -14,7 +14,7 @@ export type Lang = {
 };
 
 export async function fetchTopLanguages(username: string, token: string): Promise<Lang[]> {
-  const { user } = await graphqlFetchRetrier({ login: username }, token, VALIDATED_GRAPHQL_QUERIES.LANGS);
+  const { user } = await graphqlFetchRetrier({ login: username }, token, LANGS_QUERY);
 
   if (!user) {
     return [];

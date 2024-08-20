@@ -1,5 +1,5 @@
 import { graphqlFetchRetrier } from "../../shared/fetching-utils";
-import { VALIDATED_GRAPHQL_QUERIES } from "../../shared/validate-queries";
+import { GRAPHQL_REPOS_QUERY, GRAPHQL_STATS_QUERY } from "../../shared/queries";
 import { UserStats } from "../../types";
 
 export async function fetchAccountStats(token: string, username: string) {
@@ -62,7 +62,7 @@ async function fetchGithubUserStats({ token, username }: { token: string; userna
       includeMergedPullRequests: true,
     };
 
-    const query = vars.after ? VALIDATED_GRAPHQL_QUERIES.REPOS : VALIDATED_GRAPHQL_QUERIES.STATS;
+    const query = vars.after ? GRAPHQL_REPOS_QUERY : GRAPHQL_STATS_QUERY
     const { user: user_ } = await graphqlFetchRetrier(vars, token, query);
     const repoNodes = user_.repositories.nodes || [];
 
@@ -140,7 +140,7 @@ export function calculateRank({
       REVIEWS_WEIGHT * exponentialCdf(reviews / REVIEWS_MEDIAN) +
       STARS_WEIGHT * logNormalCdf(stars / STARS_MEDIAN) +
       FOLLOWERS_WEIGHT * logNormalCdf(followers / FOLLOWERS_MEDIAN)) /
-      TOTAL_WEIGHT;
+    TOTAL_WEIGHT;
 
   return Number((rank * 100).toFixed(2));
 }

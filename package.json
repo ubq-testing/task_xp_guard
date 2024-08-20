@@ -18,7 +18,8 @@
     "knip-ci": "knip --no-exit-code --reporter json --config .github/knip.ts",
     "prepare": "husky install",
     "test": "jest --setupFiles dotenv/config --coverage",
-    "worker": "wrangler dev --env dev --port 4000"
+    "worker": "wrangler dev --env dev --port 4000",
+    "preworker": "npx tsx scripts/validate-queries.ts"
   },
   "keywords": [
     "typescript",
@@ -68,7 +69,7 @@
     "tsx": "4.15.6",
     "typescript": "5.4.5",
     "typescript-eslint": "7.13.1",
-    "wrangler": "3.60.3"
+    "wrangler": "^3.72.1"
   },
   "lint-staged": {
     "*.ts": [

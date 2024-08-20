@@ -1,4 +1,4 @@
-export const LANGS_QUERY = `
+export const LANGS_QUERY = /* GraphQl */ `
       query userInfo($login: String!) {
         user(login: $login) {
           repositories(ownerAffiliations: [OWNER, COLLABORATOR], isFork: false, first: 100) {
@@ -19,7 +19,7 @@ export const LANGS_QUERY = `
       }
     `;
 
-const GRAPHQL_REPOS_FIELD = `
+const GRAPHQL_REPOS_FIELD = /* GraphQl */ `
   repositories(first: 100, ownerAffiliations: OWNER, orderBy: {direction: DESC, field: STARGAZERS}, after: $after) {
     totalCount
     nodes {
@@ -35,7 +35,7 @@ const GRAPHQL_REPOS_FIELD = `
   }
 `;
 
-export const GRAPHQL_REPOS_QUERY = `
+export const GRAPHQL_REPOS_QUERY = /* GraphQl */ `
   query userInfo($login: String!, $after: String) {
     user(login: $login) {
       ${GRAPHQL_REPOS_FIELD}
@@ -43,7 +43,7 @@ export const GRAPHQL_REPOS_QUERY = `
   }
 `;
 
-export const GRAPHQL_STATS_QUERY = `
+export const GRAPHQL_STATS_QUERY = /* GraphQl */ `
   query userInfo($login: String!, $after: String, $includeMergedPullRequests: Boolean!) {
     user(login: $login) {
       name

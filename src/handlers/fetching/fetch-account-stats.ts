@@ -29,7 +29,7 @@ export async function fetchAccountStats(token: string, username: string) {
   stats.totalPRs = user.pullRequests.totalCount;
   stats.totalReviews = user.contributionsCollection.totalPullRequestReviewContributions;
   stats.contributedTo = user.repositoriesContributedTo.totalCount;
-  stats.totalStars = user.repositories.nodes?.reduce((acc, repo) => acc + (repo?.stargazerCount || 0), 0) || 0;
+  stats.totalStars = user.repositories.nodes?.reduce((acc, repo) => acc + (repo?.stargazers.totalCount || 0), 0) || 0;
 
   stats.totalIssues = user.openIssues.totalCount + user.closedIssues.totalCount;
   stats.totalPRsMerged = user.mergedPullRequests.totalCount;

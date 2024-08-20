@@ -8,13 +8,22 @@ export async function handleExperienceChecks(context: Context, token: string) {
   const {
     logger,
     payload: { issue },
+    octokit,
     config: { enableChecksForOrgMembers: shouldEnableChecksForOrgMembers },
   } = context;
 
   const usernames: string[] = [];
 
-  if (issue.assignees) {
-    issue.assignees.forEach((assignee) => {
+  const [owner, repo] = issue.repository_url.split("/").slice(-2);
+
+  const { data: fetchedIssue } = await octokit.rest.issues.get({
+    owner,
+    repo,
+    issue_number: issue.number,
+  });
+
+  if (fetchedIssue?.assignees) {
+    fetchedIssue?.assignees.forEach((assignee) => {
       if (!assignee?.login) {
         return;
       }

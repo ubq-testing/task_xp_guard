@@ -18,94 +18,6 @@ jest.mock("../src/shared/fetching-utils", () => {
     graphqlFetchRetrier: jest.fn(),
   };
 });
-jest.mock("../src/shared/validate-queries", () => {
-  return {
-    VALIDATED_GRAPHQL_QUERIES: {
-      LANGS: `
-      query userInfo($login: String!) {
-        user(login: $login) {
-          repositories(ownerAffiliations: [OWNER, COLLABORATOR], isFork: false, first: 100) {
-            nodes {
-              name
-              languages(first: 10, orderBy: {field: SIZE, direction: DESC}) {
-                edges {
-                  size
-                  node {
-                    color
-                    name
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    `,
-      REPOS: `
-  query userInfo($login: String!, $after: String) {
-    user(login: $login) {
-      repositories(first: 100, ownerAffiliations: OWNER, orderBy: {direction: DESC, field: STARGAZERS}, after: $after) {
-        totalCount
-        nodes {
-          name
-          stargazers {
-            totalCount
-          }
-        }
-        pageInfo {
-          hasNextPage
-          endCursor
-        }
-      }
-    }
-  }
-    `,
-      STATS: `
-  query userInfo($login: String!, $after: String, $includeMergedPullRequests: Boolean!) {
-    user(login: $login) {
-      name
-      login
-      contributionsCollection {
-        totalCommitContributions,
-        totalPullRequestReviewContributions
-      }
-      repositoriesContributedTo(first: 1, contributionTypes: [COMMIT, ISSUE, PULL_REQUEST, REPOSITORY]) {
-        totalCount
-      }
-      pullRequests(first: 1) {
-        totalCount
-      }
-      mergedPullRequests: pullRequests(states: MERGED) @include(if: $includeMergedPullRequests) {
-        totalCount
-      }
-      openIssues: issues(states: OPEN) {
-        totalCount
-      }
-      closedIssues: issues(states: CLOSED) {
-        totalCount
-      }
-      followers {
-        totalCount
-      }
-      repositories(first: 100, ownerAffiliations: OWNER, orderBy: {direction: DESC, field: STARGAZERS}, after: $after) {
-        totalCount
-        nodes {
-          name
-          stargazers {
-            totalCount
-          }
-        }
-        pageInfo {
-          hasNextPage
-          endCursor
-        }
-      }
-    }
-  }
-`,
-    },
-  };
-});
 
 const octokit = new Octokit();
 beforeAll(() => {
@@ -291,7 +203,7 @@ function createContextInner(
       issue: issue,
       installation: { id: 1 } as Context["payload"]["installation"],
       organization: { login: STRINGS.USER_1 } as Context["payload"]["organization"],
-    },
+    } as Context["payload"],
     logger: new Logs("debug"),
     config: {
       enableChecksForOrgMembers: checksForMembers,

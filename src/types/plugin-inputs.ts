@@ -33,7 +33,12 @@ export const pluginSettingsSchema = T.Object(
      * i.e "Solidity"
      * Full issue label would be "Solidity: (arbitrary string)"
      */
-    labelFilters: T.Array(T.String(), { default: ["Solidity"] }),
+    labelFilters: T.Transform(T.Union([T.Array(T.String()), T.Record(T.String(), T.String())])).Decode((v) => {
+      if (Array.isArray(v)) {
+        return v;
+      }
+      return Object.values(v);
+    }).Encode((v) => v),
     /**
      * XP tiers for the user. These should map directly to your
      * labelling schema (i.e. "Junior", "Mid", "Pro", "Level 1", "Level 2", etc)

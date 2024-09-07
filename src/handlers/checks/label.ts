@@ -40,14 +40,10 @@ export async function handleLabelChecks(context: Context, token: string, configL
 
   if (duplicateMsgs.length > 0 || labelChecks.msg.length > 0) {
     msg.push(duplicateMsgs.join(""));
-    if (msg.length > 0) {
-      msg.push(labelChecks.msg.join(", "));
-    } else {
-      msg.push(`${labelChecks.msg.join(", ")}`);
-    }
+    msg.push(`${labelChecks.msg.join("\n")}`);
 
     if (!labelChecks.hasPassed) {
-      await addCommentToIssue(context, logger.error(`Label checks failed for ${user}: ${msg.join(", ")}`).logMessage.diff);
+      await addCommentToIssue(context, logger.error(`Language experience check failed: ${msg.join("")}`).logMessage.diff);
     }
   }
 
@@ -116,8 +112,8 @@ async function checkLabelGuards(
     const userLangPercentage = userLanguageMap.get(labelFilter);
 
     if (!userLangPercentage) {
-      const logMessage = logger.error(`${user} does not have the required language for: ${labelFilter}`);
-      msg.push(`\n! ${logMessage?.logMessage.raw}`);
+      const logMessage = logger.info(`${user} does not have the required language for: ${labelFilter}`);
+      msg.push(`\n${logMessage?.logMessage.raw}`);
       hasPassed = false;
       continue;
     }
@@ -130,15 +126,15 @@ async function checkLabelGuards(
     const tierValue = xpTiers[tier];
     if (!tierValue) {
       const logMessage = logger.error(`No tier value found for ${labelFilter}/${tier}`);
-      msg.push(`\n! ${logMessage?.logMessage.raw}`);
+      msg.push(`\n${logMessage?.logMessage.raw}`);
       hasPassed = false;
       continue;
     }
 
     if (userLangPercentage < tierValue) {
-      const logMessage = logger.error(`${user} does not meet the required tier for ${labelFilter.charAt(0).toUpperCase() + labelFilter.slice(1)}`);
+      const logMessage = logger.info(`${user} does not meet the required tier for ${labelFilter.charAt(0).toUpperCase() + labelFilter.slice(1)}`);
       hasPassed = false;
-      msg.push(`\n! ${logMessage?.logMessage.raw}`);
+      msg.push(`\n${logMessage?.logMessage.raw}`);
     }
   }
 

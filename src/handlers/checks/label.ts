@@ -113,7 +113,7 @@ async function checkLabelGuards(
 
     if (!userLangPercentage) {
       const logMessage = logger.info(`${user} does not have the required language for: ${labelFilter}`);
-      msg.push(`\n${logMessage?.logMessage.raw}`);
+      msg.push(`\n${logMessage.logMessage.raw}`);
       hasPassed = false;
       continue;
     }
@@ -126,7 +126,7 @@ async function checkLabelGuards(
     const tierValue = xpTiers[tier];
     if (!tierValue) {
       const logMessage = logger.error(`No tier value found for ${labelFilter}/${tier}`);
-      msg.push(`\n${logMessage?.logMessage.raw}`);
+      msg.push(`\n${logMessage.logMessage.raw}`);
       hasPassed = false;
       continue;
     }
@@ -134,7 +134,7 @@ async function checkLabelGuards(
     if (userLangPercentage < tierValue) {
       const logMessage = logger.info(`${user} does not meet the required tier for ${labelFilter.charAt(0).toUpperCase() + labelFilter.slice(1)}`);
       hasPassed = false;
-      msg.push(`\n${logMessage?.logMessage.raw}`);
+      msg.push(`\n${logMessage.logMessage.raw}`);
     }
   }
 

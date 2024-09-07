@@ -8,7 +8,7 @@ import manifest from "../manifest.json";
 export async function runPlugin(context: Context, token: string) {
   const { logger, eventName } = context;
 
-  if (eventName === "issues.assigned" || eventName === "issue_comment.created") {
+  if (eventName === "issues.assigned") {
     const result: Record<string, boolean> = await handleExperienceChecks(context, token);
 
     for (const [user, isOk] of Object.entries(result)) {
@@ -27,7 +27,7 @@ export async function runPlugin(context: Context, token: string) {
       }
     }
   } else {
-    throw logger.error(`Unsupported event: ${eventName}`)?.logMessage.raw;
+    throw logger.error(`Unsupported event: ${eventName}`).logMessage.raw;
   }
 }
 

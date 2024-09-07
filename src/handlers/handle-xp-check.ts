@@ -23,7 +23,7 @@ export async function handleExperienceChecks(context: Context, token: string) {
   });
 
   if (fetchedIssue?.assignees) {
-    fetchedIssue?.assignees.forEach((assignee) => {
+    fetchedIssue.assignees.forEach((assignee) => {
       if (!assignee?.login) {
         return;
       }
@@ -35,7 +35,7 @@ export async function handleExperienceChecks(context: Context, token: string) {
 
   if (!usernames.length) {
     const log = logger.error("No assignees found on the issue", { issue: issue.html_url, assignees: issue.assignees });
-    throw new Error(log?.logMessage.diff as string);
+    throw new Error(log.logMessage.diff);
   }
 
   // we'll eject the user if this is false

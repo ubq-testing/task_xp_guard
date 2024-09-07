@@ -12,7 +12,7 @@ export async function checkAccountAge(context: Context, username: string) {
 
   if (ageInDays < minAccountAgeInDays || isNaN(ageInDays)) {
     const log = logger.error(`${sender.login} has not met the minimum account age requirement of ${minAccountAgeInDays} days`);
-    await addCommentToIssue(context, log?.logMessage.diff as string);
+    await addCommentToIssue(context, log.logMessage.diff);
     return false;
   }
 

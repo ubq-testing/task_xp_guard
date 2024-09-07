@@ -10,6 +10,6 @@ export async function addCommentToIssue(context: Context, comment: string) {
       body: comment,
     });
   } catch (error) {
-    throw context.logger.error("Error adding comment to issue", { e: error })?.logMessage.raw;
+    throw context.logger.error("Error adding comment to issue", { e: error }).logMessage.raw;
   }
 }

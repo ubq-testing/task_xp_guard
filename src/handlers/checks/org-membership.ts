@@ -9,11 +9,11 @@ export async function isOrgMember(context: Context, username?: string): Promise<
   let isAllowed = false;
 
   if (permissionLevel) {
-    isAllowed = allowedRoles.includes(permissionLevel);
+    isAllowed = allowedRoles.includes(permissionLevel.toLowerCase());
   }
 
   if (membership) {
-    isAllowed = allowedRoles.includes(membership);
+    isAllowed = allowedRoles.includes(membership.toLowerCase());
   }
 
   return isAllowed;

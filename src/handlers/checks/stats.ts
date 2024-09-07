@@ -18,19 +18,19 @@ export async function handleStatChecks(context: Context, token: string, user: st
   }
 
   if (!hasPassedCommitCheck) {
-    msg.push(logger.error(commentMessage(stats.totalCommits, minCommits, "commit"))?.logMessage.diff);
+    msg.push(logger.error(commentMessage(stats.totalCommits, minCommits, "commit")).logMessage.diff);
   }
 
   if (!hasPassedPrCheck) {
-    msg.push(logger.error(commentMessage(stats.totalPRs, prs, "PR"))?.logMessage.diff);
+    msg.push(logger.error(commentMessage(stats.totalPRs, prs, "PR")).logMessage.diff);
   }
 
   if (!hasPassedIssueCheck) {
-    msg.push(logger.error(commentMessage(stats.totalIssues, issues, "issue"))?.logMessage.diff);
+    msg.push(logger.error(commentMessage(stats.totalIssues, issues, "issue")).logMessage.diff);
   }
 
   if (!hasPassedStarCheck) {
-    msg.push(logger.error(commentMessage(stats.totalStars, stars, "star"))?.logMessage.diff);
+    msg.push(logger.error(commentMessage(stats.totalStars, stars, "star")).logMessage.diff);
   }
 
   logger.info(`${user} stats: `, {

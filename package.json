@@ -18,7 +18,7 @@
     "knip-ci": "knip --no-exit-code --reporter json --config .github/knip.ts",
     "prepare": "husky install",
     "test": "jest --setupFiles dotenv/config --coverage",
-    "worker": "wrangler dev --env dev --port 4000",
+    "worker": "wrangler dev --env dev --port 4001",
     "preworker": "npx tsx scripts/validate-queries.ts"
   },
   "keywords": [
@@ -36,7 +36,7 @@
     "@octokit/rest": "20.1.1",
     "@octokit/webhooks": "13.2.7",
     "@sinclair/typebox": "0.32.33",
-    "@ubiquity-dao/ubiquibot-logger": "^1.3.0",
+    "@ubiquity-dao/ubiquibot-logger": "^1.3.1",
     "dotenv": "16.4.5",
     "typebox-validators": "0.3.5"
   },

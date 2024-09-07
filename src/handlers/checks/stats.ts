@@ -6,10 +6,10 @@ export async function handleStatChecks(context: Context, token: string, user: st
   const { logger } = context;
   const stats = await fetchAccountStats(token, user);
 
-  const hasPassedCommitCheck = stats.totalCommits > minCommits;
-  const hasPassedPrCheck = stats.totalPRs > prs;
-  const hasPassedIssueCheck = stats.totalIssues > issues;
-  const hasPassedStarCheck = stats.totalStars > stars;
+  const hasPassedCommitCheck = stats.totalCommits >= minCommits;
+  const hasPassedPrCheck = stats.totalPRs >= prs;
+  const hasPassedIssueCheck = stats.totalIssues >= issues;
+  const hasPassedStarCheck = stats.totalStars >= stars;
 
   const msg = [];
 

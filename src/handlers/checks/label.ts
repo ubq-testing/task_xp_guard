@@ -43,9 +43,12 @@ export async function handleLabelChecks(context: Context, token: string, configL
     if (msg.length > 0) {
       msg.push(labelChecks.msg.join(", "));
     } else {
-      msg.push(`\`\`\`diff\n${labelChecks.msg.join(", ")}`);
+      msg.push(`${labelChecks.msg.join(", ")}`);
     }
-    await addCommentToIssue(context, msg.join("\n"));
+
+    if (!labelChecks.hasPassed) {
+      await addCommentToIssue(context, logger.error(`Label checks failed for ${user}: ${msg.join(", ")}`).logMessage.diff);
+    }
   }
 
   return labelChecks.hasPassed;
@@ -62,7 +65,7 @@ async function findAndRemoveDuplicateFilters(labelFilters: ({ name: string; tier
     };
   }
 
-  const msg: string[] = ["```diff\n! Duplicate filters found, defaulting to the highest tiered: "];
+  const msg: string[] = ["Duplicate filters found, defaulting to the highest tiered: "];
   let count = 0;
   labels.forEach((label) => {
     if (!label) {

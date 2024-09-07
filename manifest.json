@@ -2,7 +2,6 @@
   "name": "task-xp-guard",
   "description": "Restrict task access via label filters according to language proficiency.",
   "ubiquity:listeners": [
-    "issues.assigned",
-    "issue_comment.created"
+    "issues.assigned"
   ]
 }
